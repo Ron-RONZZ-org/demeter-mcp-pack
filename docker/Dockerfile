@@ -4,7 +4,8 @@
 # aarch64 binaries into an arm64 runtime image.
 FROM --platform=$BUILDPLATFORM rust:1.95-bookworm AS build
 RUN apt-get update \
- && apt-get install -y --no-install-recommends gcc-aarch64-linux-gnu \
+ && apt-get install -y --no-install-recommends \
+      gcc-aarch64-linux-gnu libc6-dev-arm64-cross linux-libc-dev-arm64-cross \
  && rm -rf /var/lib/apt/lists/*
 RUN rustup target add aarch64-unknown-linux-gnu
 ENV CC_aarch64_unknown_linux_gnu=aarch64-linux-gnu-gcc \
@@ -18,7 +19,7 @@ RUN cargo build --release --target aarch64-unknown-linux-gnu \
  && cargo build --release --target aarch64-unknown-linux-gnu \
       --manifest-path sources/mcp-judilibre-rs/Cargo.toml
 
-FROM --platform=linux/arm64 debian:bookworm-slim
+FROM debian:bookworm-slim
 RUN apt-get update \
  && apt-get install -y --no-install-recommends ca-certificates \
  && rm -rf /var/lib/apt/lists/*
